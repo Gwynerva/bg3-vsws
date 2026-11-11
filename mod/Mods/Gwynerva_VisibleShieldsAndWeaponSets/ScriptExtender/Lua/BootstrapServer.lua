@@ -27,11 +27,32 @@ local function setMode(entity, slot, mode)
     return mode
 end
 
+-- A user id is a machine (the upper half) and a player on that machine.
+local MACHINE = 0xffff0000
+
+--- Whether the machine a request came from plays this character. Players
+--- sharing a machine (split screen) may change each other's characters; a
+--- character that belongs to nobody in particular is open to everyone.
+local function mayChange(sender, uuid)
+    if type(sender) ~= "number" then return true end -- not a network request
+    local ok, owner = pcall(Osi.GetReservedUserID, uuid)
+    if not ok or type(owner) ~= "number" then return true end
+    return owner & MACHINE == sender & MACHINE
+end
+
 -- A client asks to change one slot's mode on one character.
-Ext.Net.CreateChannel(ModuleUUID, State.CH_SET, function(msg)
+Ext.Net.CreateChannel(ModuleUUID, State.CH_SET, function(msg, sender)
     if type(msg) ~= "table" or type(msg.Entity) ~= "string" then return end
     if msg.Mode ~= nil and not State.IsMode[msg.Mode] then return end
-    setMode(Ext.Entity.Get(msg.Entity), msg.Slot, msg.Mode)
+    local entity = Ext.Entity.Get(msg.Entity)
+    if not entity then return end
+    if not mayChange(sender, msg.Entity) then
+        -- Somebody else's character. The client has already shown the change
+        -- on its side: send it the modes in effect to undo that.
+        changed:SendToClient({ Entity = msg.Entity, Modes = entity.Vars[State.VAR] or {} }, sender)
+        return
+    end
+    setMode(entity, msg.Slot, msg.Mode)
 end)
 
 -- A client that has just loaded asks for the current modes: the synced

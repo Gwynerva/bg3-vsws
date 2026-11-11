@@ -98,6 +98,17 @@ WEAPON_EQ_TEMPLATE = f"""    <ControlTemplate x:Key="VSWS_WeaponEQTemplate" Targ
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Opacity" Value="1" TargetName="VisibilityButton"/>
             </Trigger>
+            <!-- Another player's character: no button. The comparison is the one the
+                 game's own slot triggers make. -->
+            <DataTrigger Value="False">
+                <DataTrigger.Binding>
+                    <MultiBinding Converter="{{StaticResource EqualConverter}}">
+                        <Binding RelativeSource="{{RelativeSource AncestorType={{x:Type ls:UIWidget}}}}" Path="DataContext.CurrentPlayer.UserId"/>
+                        <Binding Path="DataContext.PlayerCharacterProperties.OwnerUserID" ElementName="EquipmentSlots"/>
+                    </MultiBinding>
+                </DataTrigger.Binding>
+                <Setter Property="Visibility" Value="Collapsed" TargetName="VisibilityButton"/>
+            </DataTrigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>"""
 
