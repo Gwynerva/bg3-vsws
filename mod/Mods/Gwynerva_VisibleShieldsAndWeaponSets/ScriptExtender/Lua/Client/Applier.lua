@@ -1,9 +1,16 @@
--- Decides, per entity and slot, whether a weapon/shield is drawn, by editing
--- ClientEquipmentVisibilityState.Equipment: the engine's own table of slots
--- to draw. A slot without a row is not drawn.
+-- Characters in the world and their copies in photo mode.
 --
--- Since Patch 8 the engine leaves the shield's row out while weapons are
--- sheathed; we put it back. For a hidden slot we take the row out.
+-- ClientEquipmentVisibilityState.Equipment is the engine's own table of slots
+-- to draw: a slot without a row is not drawn. This module edits that table
+-- right after the engine has filled it in, and the engine does the rest:
+--
+--   * the shield's row, which the engine leaves out since Patch 8 while
+--     weapons are sheathed, is put back;
+--   * rows are added for the weapon set that is not in use, marked as stowed;
+--   * the row of a slot hidden by its mode is taken out.
+--
+-- Dialogues and cutscenes are handled in Timeline.lua: their dummies do not
+-- have this component.
 
 local State = Ext.Require("Shared/State.lua")
 
@@ -11,17 +18,24 @@ local Applier = {}
 
 local COMPONENT = "ClientEquipmentVisibilityState"
 local SHIELD_SLOT = "MeleeOffHand"
-local DUMMY_HIDE_WEAPONS = 1 << 16   -- DummyEquipmentVisualsState.field_0
-local DUMMY_SHEATHED = 3             -- DummyUnsheath.field_0
 
-local pending = {}   -- entities to apply (and flag as changed) this frame
-local tracked = {}   -- entities with the component
-local stash = {}     -- stash[entity][slot] = row we removed, to put back on unhide
-local modeCache = {} -- uuid -> modes, from server broadcasts
-local waited = {}    -- waited[entity][slot] = times we held back for a model still loading
+-- Photo-mode dummies: bits of DummyEquipmentVisualsState.field_0 and values
+-- of DummyUnsheath.field_0. (Placeholder names in Script Extender.)
+local DUMMY_HIDE_WEAPONS = 1 << 16
+local DUMMY_UNSHEATH = { [0] = "Instrument", [1] = "Melee", [2] = "Ranged", [3] = "Sheathed" }
 
-local RETRY_MS = 250
-local MAX_WAITS = 20
+-- A row taken out before the engine has built the slot's model does not stop
+-- the model from appearing, so hiding waits for the model: this often, this
+-- many times at most.
+local MODEL_RETRY_MS = 250
+local MODEL_MAX_WAITS = 20
+
+local tracked = {}   -- entities that have the component
+local pending = {}   -- entities to bring in line (and flag as changed) this frame
+local stash = {}     -- stash[entity][slot] = a row taken out, to be put back
+local waited = {}    -- waited[entity][slot] = times hiding was put off for a model still loading
+local modeCache = {} -- uuid -> modes, as last told by the server
+local modesVersion = 0
 
 local function get(fn)
     local ok, v = pcall(fn)
@@ -33,27 +47,36 @@ local function uuidOf(entity)
     return get(function() return entity.Uuid.EntityUuid end)
 end
 
---- The character an entity stands for, and the context it is shown in.
---- Dialogue and photo mode show copies ("dummies") of the real character.
----@return EntityHandle owner, string context "world"|"cinematic"|"photo"
+-- ---------------------------------------------------------------- characters
+
+--- The character an entity stands for, and where it is shown.
+---@return EntityHandle owner, string context "world" or "photo"
 function Applier.Resolve(entity)
     local owner = get(function() return entity.Dummy.Entity end)
-    local isTimeline = get(function() return entity.TLPreviewDummy ~= nil end)
-    if isTimeline then
-        owner = owner or get(function() return entity.TLPreviewDummy.Entity end)
-        return owner or entity, "cinematic"
-    end
     if owner then return owner, "photo" end
     return entity, "world"
 end
 
+--- A character's modes: slot -> mode. May be nil.
 function Applier.ModesOf(owner)
     local uuid = uuidOf(owner)
     if uuid and modeCache[uuid] then return modeCache[uuid] end
     return get(function() return owner.Vars[State.VAR] end)
 end
 
-local function equippedItem(owner, slot)
+--- Modes as last told by the server, without touching the entity: safe to
+--- call from UI callbacks.
+function Applier.CachedModes(uuid)
+    return modeCache[uuid]
+end
+
+--- Changes whenever any character's modes do.
+function Applier.ModesVersion()
+    return modesVersion
+end
+
+--- The item in one of a character's equipment slots, if any.
+function Applier.EquippedItem(owner, slot)
     return get(function()
         for _, inv in ipairs(owner.InventoryOwner.Inventories) do
             if inv.InventoryData.Type == Ext.Enums.InventoryType.Equipment then
@@ -64,50 +87,6 @@ local function equippedItem(owner, slot)
             end
         end
     end)
-end
-
-Applier.EquippedItem = equippedItem
-
-local function equippedShield(owner)
-    local item = equippedItem(owner, SHIELD_SLOT)
-    if item and get(function() return item.Armor.Shield end) then return item end
-    return nil
-end
-
---- Whether the engine has the weapons put away on this entity.
-local function shieldBelongsOnBack(entity, context)
-    if context ~= "world" and get(function() return entity.Dummy ~= nil end) then
-        local flags = get(function() return entity.DummyEquipmentVisualsState.field_0 end)
-        local unsheath = get(function() return entity.DummyUnsheath.field_0 end)
-        return flags ~= nil and flags & DUMMY_HIDE_WEAPONS == 0 and unsheath == DUMMY_SHEATHED
-    end
-    local armorSet = get(function() return tostring(entity.ArmorSetState.State) end)
-    if armorSet ~= nil and armorSet ~= "Normal" then return false end
-    if get(function() return tostring(entity.WeaponSet.WeaponSet) end) ~= "Melee" then return false end
-    local state = get(function() return tostring(entity.Unsheath.State) end)
-    return state == "Sheathed" or state == "Instrument"
-end
-
---- Whether a slot belongs to the weapon set that is not in use, and stowed
---- weapons are being shown at all. The engine draws only the set in use; a
---- row for the other set, marked as stowed, makes it draw that one as well.
-local function otherSetStowed(entity, owner, context, slot)
-    if context ~= "world" and get(function() return entity.Dummy ~= nil end) then
-        local flags = get(function() return entity.DummyEquipmentVisualsState.field_0 end)
-        if flags == nil or flags & DUMMY_HIDE_WEAPONS ~= 0 then return false end
-    else
-        local armorSet = get(function() return tostring(entity.ArmorSetState.State) end)
-        if armorSet ~= nil and armorSet ~= "Normal" then return false end
-    end
-    local inUse = get(function() return tostring(owner.WeaponSet.WeaponSet) end)
-    if inUse ~= "Melee" and inUse ~= "Ranged" then return false end
-    return slot:sub(1, #inUse) ~= inUse
-end
-
---- Whether the engine has finished building the slot's model. A row taken
---- out earlier than that does not stop the model from appearing afterwards.
-local function modelLoaded(entity, slot)
-    return get(function() return entity.ClientEquipmentVisuals.Equipment[slot].Loaded end) == true
 end
 
 --- The weapon set in use ("Melee" or "Ranged"), or nil if it cannot be told.
@@ -123,77 +102,125 @@ function Applier.SlotInSet(slot, set)
     return set == nil or slot:sub(1, #set) == set
 end
 
-local DUMMY_UNSHEATH = { [0] = "Instrument", [1] = "Melee", [2] = "Ranged", [3] = "Sheathed" }
-
---- "Melee" / "Ranged" when that set is in the hands, otherwise "Sheathed" / "Instrument".
+--- "Melee" / "Ranged" while that set is in the hands, otherwise "Sheathed" or "Instrument".
 function Applier.UnsheathState(entity)
     local dummy = get(function() return entity.DummyUnsheath.field_0 end)
     if dummy ~= nil then return DUMMY_UNSHEATH[dummy] end
     return get(function() return tostring(entity.Unsheath.State) end)
 end
 
---- A drawn weapon is never hidden: the modes only concern stowed gear.
---- The row says so itself (field_8 = 1 while in the hands); the character's
---- Unsheath state changes a moment later and cannot be relied on here.
+-- ---------------------------------------------------------------------- rows
+
+--- Whether the engine is showing this entity's weapons at all: not while it
+--- wears camp clothes, and not on a photo-mode dummy with weapons turned off.
+local function weaponsShown(entity, context)
+    if context == "photo" then
+        local flags = get(function() return entity.DummyEquipmentVisualsState.field_0 end)
+        return flags ~= nil and flags & DUMMY_HIDE_WEAPONS == 0
+    end
+    local armorSet = get(function() return tostring(entity.ArmorSetState.State) end)
+    return armorSet == nil or armorSet == "Normal"
+end
+
+--- A stowed weapon, as a row. (field_8: in the hands; field_9: is a weapon.
+--- Placeholder names in Script Extender.)
+local function stowedRow(item)
+    return { Item = item, field_8 = 0, field_9 = 1 }
+end
+
+--- A drawn weapon is never hidden: the modes only concern stowed gear. The
+--- row says so itself; the character's Unsheath state changes a moment later
+--- and cannot be relied on here.
 local function inHand(row)
     return row.field_8 == 1
 end
 
---- Bring one entity's rows in line with its owner's modes.
----@return boolean changed
-function Applier.Apply(entity)
-    local vis = entity[COMPONENT]
-    if not vis then return false end
-    local owner, context = Applier.Resolve(entity)
-    local modes = Applier.ModesOf(owner)
-    local rows = vis.Equipment
-    local changed = false
-    local inUse = Applier.SetInUse(owner)
+local function modelLoaded(entity, slot)
+    return get(function() return entity.ClientEquipmentVisuals.Equipment[slot].Loaded end) == true
+end
 
-    for _, slot in ipairs(State.SLOTS) do
-        local row = rows[slot]
-        local hidden = State.IsHidden(State.ModeOf(modes, slot), context == "cinematic", Applier.SlotInSet(slot, inUse))
-        if hidden then
-            local waits = waited[entity] and waited[entity][slot] or 0
-            if row and not inHand(row) and not modelLoaded(entity, slot) and waits < MAX_WAITS then
-                -- Come back once the model is there (or give up waiting and hide anyway).
-                waited[entity] = waited[entity] or {}
-                waited[entity][slot] = waits + 1
-                Ext.Timer.WaitFor(RETRY_MS, function()
-                    if tracked[entity] then pending[entity] = true end
-                end)
-            elseif row and not inHand(row) then
-                if waited[entity] then waited[entity][slot] = nil end
-                stash[entity] = stash[entity] or {}
-                stash[entity][slot] = { Item = row.Item, field_8 = row.field_8, field_9 = row.field_9 }
-                rows[slot] = nil
-                changed = true
-            end
-        elseif not row then
-            local kept = stash[entity] and stash[entity][slot]
-            if kept then
-                -- Put back what we took out, unless the item has since left the slot.
-                stash[entity][slot] = nil
-                if equippedItem(owner, slot) == kept.Item then
-                    rows[slot] = kept
-                    changed = true
-                end
-            elseif slot == SHIELD_SLOT and shieldBelongsOnBack(entity, context) then
-                local shield = equippedShield(owner)
-                if shield then
-                    rows[slot] = { Item = shield, field_8 = 0, field_9 = 1 }
-                    changed = true
-                end
-            elseif State.SHOW_BOTH_SETS and otherSetStowed(entity, owner, context, slot) then
-                local item = equippedItem(owner, slot)
-                if item then
-                    rows[slot] = { Item = item, field_8 = 0, field_9 = 1 }
-                    changed = true
-                end
-            end
+--- The item whose row the engine leaves out but which is to be drawn, if any.
+local function missingItem(entity, owner, context, slot, inUse)
+    if not weaponsShown(entity, context) then return nil end
+
+    if not Applier.SlotInSet(slot, inUse) then
+        -- The weapon set that is not in use: always stowed.
+        return State.SHOW_BOTH_SETS and Applier.EquippedItem(owner, slot) or nil
+    end
+
+    if slot == SHIELD_SLOT and inUse == "Melee" then
+        -- The shield, while the melee set is put away.
+        local unsheath = Applier.UnsheathState(entity)
+        if unsheath == "Sheathed" or unsheath == "Instrument" then
+            local item = Applier.EquippedItem(owner, slot)
+            if item and get(function() return item.Armor.Shield end) then return item end
         end
     end
-    return changed
+    return nil
+end
+
+--- Take a hidden slot's row out. Waits for the model first.
+---@return boolean changed
+local function hide(entity, rows, slot)
+    local row = rows[slot]
+    if not row or inHand(row) then return false end
+
+    local waits = waited[entity] and waited[entity][slot] or 0
+    if not modelLoaded(entity, slot) and waits < MODEL_MAX_WAITS then
+        waited[entity] = waited[entity] or {}
+        waited[entity][slot] = waits + 1
+        Ext.Timer.WaitFor(MODEL_RETRY_MS, function()
+            if tracked[entity] then pending[entity] = true end
+        end)
+        return false
+    end
+
+    if waited[entity] then waited[entity][slot] = nil end
+    stash[entity] = stash[entity] or {}
+    stash[entity][slot] = { Item = row.Item, field_8 = row.field_8, field_9 = row.field_9 }
+    rows[slot] = nil
+    return true
+end
+
+--- Give a slot that is to be drawn its row, if the engine left it out.
+---@return boolean changed
+local function show(entity, owner, context, rows, slot, inUse)
+    if rows[slot] then return false end
+
+    local kept = stash[entity] and stash[entity][slot]
+    if kept then
+        -- Put back what was taken out, unless the item has since left the slot.
+        stash[entity][slot] = nil
+        if Applier.EquippedItem(owner, slot) == kept.Item then
+            rows[slot] = kept
+            return true
+        end
+    end
+
+    local item = missingItem(entity, owner, context, slot, inUse)
+    if item then
+        rows[slot] = stowedRow(item)
+        return true
+    end
+    return false
+end
+
+--- Bring one entity's rows in line with its owner's modes.
+function Applier.Apply(entity)
+    local component = entity[COMPONENT]
+    if not component then return end
+    local owner, context = Applier.Resolve(entity)
+    local modes = Applier.ModesOf(owner)
+    local inUse = Applier.SetInUse(owner)
+    local rows = component.Equipment
+
+    for _, slot in ipairs(State.SLOTS) do
+        if State.IsHidden(State.ModeOf(modes, slot), false, Applier.SlotInSet(slot, inUse)) then
+            hide(entity, rows, slot)
+        else
+            show(entity, owner, context, rows, slot, inUse)
+        end
+    end
 end
 
 local function safeApply(entity)
@@ -201,30 +228,19 @@ local function safeApply(entity)
     if not ok then State.Warn("apply failed:", err) end
 end
 
---- Ask for an entity to be re-applied on the next frame.
-function Applier.Refresh(entity)
-    pending[entity] = true
-end
+-- -------------------------------------------------------------------- events
 
---- Re-apply every tracked entity that stands for this character.
-function Applier.RefreshCharacter(uuid)
+--- The server's word on a character's modes: remember it and re-apply every
+--- entity that stands for that character.
+function Applier.SetModes(uuid, modes)
+    modeCache[uuid] = modes
+    modesVersion = modesVersion + 1
     for entity in pairs(tracked) do
-        local owner = Applier.Resolve(entity)
-        if uuidOf(owner) == uuid then pending[entity] = true end
+        if uuidOf(Applier.Resolve(entity)) == uuid then pending[entity] = true end
     end
 end
 
-function Applier.SetModes(uuid, modes)
-    modeCache[uuid] = modes
-    Applier.RefreshCharacter(uuid)
-end
-
---- Modes as last told by the server, without touching the entity: safe to
---- call from UI callbacks.
-function Applier.CachedModes(uuid)
-    return modeCache[uuid]
-end
-
+--- Every entity being looked after (for the diagnostic dump).
 function Applier.Tracked()
     return tracked
 end
@@ -241,11 +257,11 @@ function Applier.RegisterListeners()
     -- Right after the engine has decided what to draw: the only point where
     -- an edit is picked up in the same frame.
     Ext.Entity.OnSystemPostUpdate("ClientVisualsVisibilityState", function()
+        -- The engine rewrote an entity's rows: put ours back.
         for entity in pairs(tracked) do
-            if not pending[entity] and entity:WasChanged(COMPONENT) then
-                safeApply(entity)
-            end
+            if not pending[entity] and entity:WasChanged(COMPONENT) then safeApply(entity) end
         end
+        -- Something of ours changed (a new entity, new modes): apply, and tell the engine.
         if next(pending) then
             local batch = pending
             pending = {}

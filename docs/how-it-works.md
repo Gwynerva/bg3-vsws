@@ -43,7 +43,11 @@ Scenes show copies of the characters ("timeline dummies") taken from a pool. A d
 its slots directly, with the weapon set in use only.
 
 - **Finding the dummy.** There is no event for a dummy being filled in. A scene is noticed on the real
-  character (it carries `TimelineActorData` while the scene runs), and its dummy is looked up in the pool.
+  character: it carries `TimelineActorData` while the scene runs, which names the scene and the
+  character's part in it. The scene keeps a table of the entities playing each part, so the dummy is
+  `Ext.System.ClientTimeline.Timelines[data.Timeline].RegisteredActors[data.Actor]` (there from the
+  second frame of the scene). Going through the pool of dummies instead works too, but the pool holds
+  hundreds and a pass over it costs milliseconds; it is kept only as a fallback.
 - **Hiding.** A stowed weapon on a dummy is a model attached to a sheath bone; its render passes are
   switched off. The engine sometimes switches one back on mid-scene, so found dummies are checked every frame.
 - **The other weapon set.** Once the dummy is fully dressed, the mod creates `ClientVisualsDesiredState`
