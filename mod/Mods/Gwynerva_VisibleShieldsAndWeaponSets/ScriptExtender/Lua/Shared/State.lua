@@ -2,7 +2,7 @@
 
 local State = {}
 
-State.VAR = "GwyVS_SlotModes"
+State.VAR = "VSWS_SlotModes"
 
 -- Network channels (Ext.Net.CreateChannel), one name per message kind.
 State.CH_SET = "SetMode"       -- client -> server: { Entity, Slot, Mode? }

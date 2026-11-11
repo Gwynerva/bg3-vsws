@@ -64,8 +64,8 @@ def call(command, parameter):
 
 def report_and_show(indent):
     """Tell the mod which character is shown, then have it fill in all four states."""
-    rows = [call("GwyVS_CharacterCommand", CHARACTER)]
-    rows += [call(f"GwyVS_Show{slot}Command", f"{{Binding ElementName=GwyVS_{slot}State}}") for slot in SLOTS]
+    rows = [call("VSWS_CharacterCommand", CHARACTER)]
+    rows += [call(f"VSWS_Show{slot}Command", f"{{Binding ElementName=VSWS_{slot}State}}") for slot in SLOTS]
     return ("\n" + indent).join(rows)
 
 
@@ -73,13 +73,13 @@ def host():
     """An invisible element holding the state text blocks and the triggers that keep them current."""
     pad = " " * 32
     states = "\n".join(
-        f'                        <TextBlock x:Name="GwyVS_{slot}State" Text="Visible" Visibility="Collapsed"/>'
+        f'                        <TextBlock x:Name="VSWS_{slot}State" Text="Visible" Visibility="Collapsed"/>'
         for slot in SLOTS)
     return f"""
                     <!-- The mode of each weapon slot, written by the mod's Lua and read by the triggers below.
                          Refreshed when the popup is created, each time it is opened or closed, and whenever
                          another character is selected. -->
-                    <Grid x:Name="GwyVS_Host" Width="0" Height="0">
+                    <Grid x:Name="VSWS_Host" Width="0" Height="0">
                         <b:Interaction.Triggers>
                             <b:EventTrigger EventName="Loaded">
                                 {report_and_show(pad)}
@@ -98,32 +98,32 @@ def host():
 
 def option(slot, label):
     """One option of the popup, modelled on the game's HelmetOption."""
-    name = f"GwyVS_{slot}Option"
+    name = f"VSWS_{slot}Option"
     visible_label, visible_icon = MODE_VISIBLE
     shown = "Visible" if slot.startswith("Melee") else "Collapsed"  # see set_triggers()
     return f"""
-                    <Button x:Name="{name}" Command="{{Binding Tag.GwyVS_Toggle{slot}Command, {COMMANDS}}}" CommandParameter="{{Binding ElementName=GwyVS_{slot}State}}" Style="{{StaticResource FocusableContentControlStyle}}" Margin="0,0,0,12" Visibility="{shown}">
+                    <Button x:Name="{name}" Command="{{Binding Tag.VSWS_Toggle{slot}Command, {COMMANDS}}}" CommandParameter="{{Binding ElementName=VSWS_{slot}State}}" Style="{{StaticResource FocusableContentControlStyle}}" Margin="0,0,0,12" Visibility="{shown}">
                         <b:Interaction.Triggers>
                             <!-- Runs before the command: makes sure the mod acts on the character of this panel. -->
                             <b:EventTrigger EventName="Click">
-                                {call("GwyVS_CharacterCommand", CHARACTER)}
+                                {call("VSWS_CharacterCommand", CHARACTER)}
                             </b:EventTrigger>
                         </b:Interaction.Triggers>
                         <DockPanel Margin="20,10">
                             <!-- Unfocused icon -->
                             <Grid Style="{{StaticResource equipmentMenuIconBGgrid}}" Visibility="{{Binding Path=(ls:MoveFocus.IsFocused), ElementName={name}, Converter={{StaticResource BoolToCollapsedConverter}}}}">
                                 <Ellipse Style="{{StaticResource equipmentMenuIconBG}}"/>
-                                <Image x:Name="GwyVS_{slot}Icon" Style="{{StaticResource equipmentMenuIconStyle}}" Source="{{StaticResource {visible_icon}_d}}"/>
+                                <Image x:Name="VSWS_{slot}Icon" Style="{{StaticResource equipmentMenuIconStyle}}" Source="{{StaticResource {visible_icon}_d}}"/>
                             </Grid>
                             <!-- Focused icon -->
                             <Grid Style="{{StaticResource equipmentMenuIconBGgrid}}" Visibility="{{Binding Path=(ls:MoveFocus.IsFocused), ElementName={name}, Converter={{StaticResource BoolToVisibleConverter}}}}">
                                 <Ellipse Style="{{StaticResource equipmentMenuIconBG}}"/>
-                                <Image x:Name="GwyVS_{slot}Icon_h" Style="{{StaticResource equipmentMenuIconStyle}}" Source="{{StaticResource {visible_icon}_h}}" />
+                                <Image x:Name="VSWS_{slot}Icon_h" Style="{{StaticResource equipmentMenuIconStyle}}" Source="{{StaticResource {visible_icon}_h}}" />
                             </Grid>
 
                             <TextBlock Style="{{StaticResource equipmentMenuOptionLabel}}" Text="{text(label)}"/>
 
-                            <TextBlock x:Name="GwyVS_{slot}Setting" Text="{text(visible_label)}" Style="{{StaticResource equipmentMenuOptionSetting}}"/>
+                            <TextBlock x:Name="VSWS_{slot}Setting" Text="{text(visible_label)}" Style="{{StaticResource equipmentMenuOptionSetting}}"/>
 
                         </DockPanel>
                     </Button>
@@ -135,10 +135,10 @@ def triggers(slot):
     for mode, (label, icon) in MODES.items():
         icon = icon or ("c_ico_equipment_meleeSet" if slot.startswith("Melee") else "c_ico_equipment_rangedSet")
         out.append(f"""
-            <DataTrigger Binding="{{Binding Text, ElementName=GwyVS_{slot}State}}" Value="{mode}">
-                <Setter TargetName="GwyVS_{slot}Setting" Property="Text" Value="{text(label)}"/>
-                <Setter TargetName="GwyVS_{slot}Icon" Property="Source" Value="{{StaticResource {icon}_d}}"/>
-                <Setter TargetName="GwyVS_{slot}Icon_h" Property="Source" Value="{{StaticResource {icon}_h}}"/>
+            <DataTrigger Binding="{{Binding Text, ElementName=VSWS_{slot}State}}" Value="{mode}">
+                <Setter TargetName="VSWS_{slot}Setting" Property="Text" Value="{text(label)}"/>
+                <Setter TargetName="VSWS_{slot}Icon" Property="Source" Value="{{StaticResource {icon}_d}}"/>
+                <Setter TargetName="VSWS_{slot}Icon_h" Property="Source" Value="{{StaticResource {icon}_h}}"/>
             </DataTrigger>
 """)
     return "".join(out)
@@ -177,10 +177,10 @@ def set_triggers():
     """Only the two options of the weapon set in use are shown; the game's own
     "current weapon set" option above them switches between the pairs."""
     hide = "".join(
-        f'                <Setter TargetName="GwyVS_{slot}Option" Property="Visibility" Value="Collapsed"/>\n'
+        f'                <Setter TargetName="VSWS_{slot}Option" Property="Visibility" Value="Collapsed"/>\n'
         for slot in SLOTS if slot.startswith("Melee"))
     reveal = "".join(
-        f'                <Setter TargetName="GwyVS_{slot}Option" Property="Visibility" Value="Visible"/>\n'
+        f'                <Setter TargetName="VSWS_{slot}Option" Property="Visibility" Value="Visible"/>\n'
         for slot in SLOTS if slot.startswith("Ranged"))
     return f"""
             <DataTrigger Binding="{{Binding CurrentPlayer.SelectedCharacter.PlayerCharacterProperties.HasRangedSetActive}}" Value="True">

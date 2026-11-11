@@ -122,136 +122,136 @@
                     <!-- The mode of each weapon slot, written by the mod's Lua and read by the triggers below.
                          Refreshed when the popup is created, each time it is opened or closed, and whenever
                          another character is selected. -->
-                    <Grid x:Name="GwyVS_Host" Width="0" Height="0">
+                    <Grid x:Name="VSWS_Host" Width="0" Height="0">
                         <b:Interaction.Triggers>
                             <b:EventTrigger EventName="Loaded">
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_ShowMeleeMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_MeleeMainHandState}"/>
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_ShowMeleeOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_MeleeOffHandState}"/>
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_ShowRangedMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_RangedMainHandState}"/>
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_ShowRangedOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_RangedOffHandState}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_ShowMeleeMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_MeleeMainHandState}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_ShowMeleeOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_MeleeOffHandState}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_ShowRangedMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_RangedMainHandState}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_ShowRangedOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_RangedOffHandState}"/>
                             </b:EventTrigger>
                             <b:PropertyChangedTrigger Binding="{Binding CurrentPlayer.SelectedCharacter}">
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_ShowMeleeMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_MeleeMainHandState}"/>
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_ShowMeleeOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_MeleeOffHandState}"/>
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_ShowRangedMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_RangedMainHandState}"/>
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_ShowRangedOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_RangedOffHandState}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_ShowMeleeMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_MeleeMainHandState}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_ShowMeleeOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_MeleeOffHandState}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_ShowRangedMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_RangedMainHandState}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_ShowRangedOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_RangedOffHandState}"/>
                             </b:PropertyChangedTrigger>
                             <b:PropertyChangedTrigger Binding="{Binding IsEnabled, ElementName=EquipmentOptions}">
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_ShowMeleeMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_MeleeMainHandState}"/>
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_ShowMeleeOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_MeleeOffHandState}"/>
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_ShowRangedMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_RangedMainHandState}"/>
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_ShowRangedOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_RangedOffHandState}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_ShowMeleeMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_MeleeMainHandState}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_ShowMeleeOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_MeleeOffHandState}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_ShowRangedMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_RangedMainHandState}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_ShowRangedOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_RangedOffHandState}"/>
                             </b:PropertyChangedTrigger>
                         </b:Interaction.Triggers>
-                        <TextBlock x:Name="GwyVS_MeleeMainHandState" Text="Visible" Visibility="Collapsed"/>
-                        <TextBlock x:Name="GwyVS_MeleeOffHandState" Text="Visible" Visibility="Collapsed"/>
-                        <TextBlock x:Name="GwyVS_RangedMainHandState" Text="Visible" Visibility="Collapsed"/>
-                        <TextBlock x:Name="GwyVS_RangedOffHandState" Text="Visible" Visibility="Collapsed"/>
+                        <TextBlock x:Name="VSWS_MeleeMainHandState" Text="Visible" Visibility="Collapsed"/>
+                        <TextBlock x:Name="VSWS_MeleeOffHandState" Text="Visible" Visibility="Collapsed"/>
+                        <TextBlock x:Name="VSWS_RangedMainHandState" Text="Visible" Visibility="Collapsed"/>
+                        <TextBlock x:Name="VSWS_RangedOffHandState" Text="Visible" Visibility="Collapsed"/>
                     </Grid>
 
-                    <Button x:Name="GwyVS_MeleeMainHandOption" Command="{Binding Tag.GwyVS_ToggleMeleeMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_MeleeMainHandState}" Style="{StaticResource FocusableContentControlStyle}" Margin="0,0,0,12" Visibility="Visible">
+                    <Button x:Name="VSWS_MeleeMainHandOption" Command="{Binding Tag.VSWS_ToggleMeleeMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_MeleeMainHandState}" Style="{StaticResource FocusableContentControlStyle}" Margin="0,0,0,12" Visibility="Visible">
                         <b:Interaction.Triggers>
                             <!-- Runs before the command: makes sure the mod acts on the character of this panel. -->
                             <b:EventTrigger EventName="Click">
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
                             </b:EventTrigger>
                         </b:Interaction.Triggers>
                         <DockPanel Margin="20,10">
                             <!-- Unfocused icon -->
-                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=GwyVS_MeleeMainHandOption, Converter={StaticResource BoolToCollapsedConverter}}">
+                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=VSWS_MeleeMainHandOption, Converter={StaticResource BoolToCollapsedConverter}}">
                                 <Ellipse Style="{StaticResource equipmentMenuIconBG}"/>
-                                <Image x:Name="GwyVS_MeleeMainHandIcon" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_d}"/>
+                                <Image x:Name="VSWS_MeleeMainHandIcon" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_d}"/>
                             </Grid>
                             <!-- Focused icon -->
-                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=GwyVS_MeleeMainHandOption, Converter={StaticResource BoolToVisibleConverter}}">
+                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=VSWS_MeleeMainHandOption, Converter={StaticResource BoolToVisibleConverter}}">
                                 <Ellipse Style="{StaticResource equipmentMenuIconBG}"/>
-                                <Image x:Name="GwyVS_MeleeMainHandIcon_h" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_h}" />
+                                <Image x:Name="VSWS_MeleeMainHandIcon_h" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_h}" />
                             </Grid>
 
                             <TextBlock Style="{StaticResource equipmentMenuOptionLabel}" Text="{Binding Source='hcc6fff75g71f5g42e0gbd4bg91c52dcf72c8',Converter={StaticResource TranslatedStringConverter}}"/>
 
-                            <TextBlock x:Name="GwyVS_MeleeMainHandSetting" Text="{Binding Source='h153c3f7cga3aeg4d25gb8dcg439be99a27e1',Converter={StaticResource TranslatedStringConverter}}" Style="{StaticResource equipmentMenuOptionSetting}"/>
+                            <TextBlock x:Name="VSWS_MeleeMainHandSetting" Text="{Binding Source='h153c3f7cga3aeg4d25gb8dcg439be99a27e1',Converter={StaticResource TranslatedStringConverter}}" Style="{StaticResource equipmentMenuOptionSetting}"/>
 
                         </DockPanel>
                     </Button>
 
-                    <Button x:Name="GwyVS_MeleeOffHandOption" Command="{Binding Tag.GwyVS_ToggleMeleeOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_MeleeOffHandState}" Style="{StaticResource FocusableContentControlStyle}" Margin="0,0,0,12" Visibility="Visible">
+                    <Button x:Name="VSWS_MeleeOffHandOption" Command="{Binding Tag.VSWS_ToggleMeleeOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_MeleeOffHandState}" Style="{StaticResource FocusableContentControlStyle}" Margin="0,0,0,12" Visibility="Visible">
                         <b:Interaction.Triggers>
                             <!-- Runs before the command: makes sure the mod acts on the character of this panel. -->
                             <b:EventTrigger EventName="Click">
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
                             </b:EventTrigger>
                         </b:Interaction.Triggers>
                         <DockPanel Margin="20,10">
                             <!-- Unfocused icon -->
-                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=GwyVS_MeleeOffHandOption, Converter={StaticResource BoolToCollapsedConverter}}">
+                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=VSWS_MeleeOffHandOption, Converter={StaticResource BoolToCollapsedConverter}}">
                                 <Ellipse Style="{StaticResource equipmentMenuIconBG}"/>
-                                <Image x:Name="GwyVS_MeleeOffHandIcon" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_d}"/>
+                                <Image x:Name="VSWS_MeleeOffHandIcon" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_d}"/>
                             </Grid>
                             <!-- Focused icon -->
-                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=GwyVS_MeleeOffHandOption, Converter={StaticResource BoolToVisibleConverter}}">
+                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=VSWS_MeleeOffHandOption, Converter={StaticResource BoolToVisibleConverter}}">
                                 <Ellipse Style="{StaticResource equipmentMenuIconBG}"/>
-                                <Image x:Name="GwyVS_MeleeOffHandIcon_h" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_h}" />
+                                <Image x:Name="VSWS_MeleeOffHandIcon_h" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_h}" />
                             </Grid>
 
                             <TextBlock Style="{StaticResource equipmentMenuOptionLabel}" Text="{Binding Source='h3e2ec6f9g6f2eg47d1ga3ebg827473b216c6',Converter={StaticResource TranslatedStringConverter}}"/>
 
-                            <TextBlock x:Name="GwyVS_MeleeOffHandSetting" Text="{Binding Source='h153c3f7cga3aeg4d25gb8dcg439be99a27e1',Converter={StaticResource TranslatedStringConverter}}" Style="{StaticResource equipmentMenuOptionSetting}"/>
+                            <TextBlock x:Name="VSWS_MeleeOffHandSetting" Text="{Binding Source='h153c3f7cga3aeg4d25gb8dcg439be99a27e1',Converter={StaticResource TranslatedStringConverter}}" Style="{StaticResource equipmentMenuOptionSetting}"/>
 
                         </DockPanel>
                     </Button>
 
-                    <Button x:Name="GwyVS_RangedMainHandOption" Command="{Binding Tag.GwyVS_ToggleRangedMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_RangedMainHandState}" Style="{StaticResource FocusableContentControlStyle}" Margin="0,0,0,12" Visibility="Collapsed">
+                    <Button x:Name="VSWS_RangedMainHandOption" Command="{Binding Tag.VSWS_ToggleRangedMainHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_RangedMainHandState}" Style="{StaticResource FocusableContentControlStyle}" Margin="0,0,0,12" Visibility="Collapsed">
                         <b:Interaction.Triggers>
                             <!-- Runs before the command: makes sure the mod acts on the character of this panel. -->
                             <b:EventTrigger EventName="Click">
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
                             </b:EventTrigger>
                         </b:Interaction.Triggers>
                         <DockPanel Margin="20,10">
                             <!-- Unfocused icon -->
-                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=GwyVS_RangedMainHandOption, Converter={StaticResource BoolToCollapsedConverter}}">
+                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=VSWS_RangedMainHandOption, Converter={StaticResource BoolToCollapsedConverter}}">
                                 <Ellipse Style="{StaticResource equipmentMenuIconBG}"/>
-                                <Image x:Name="GwyVS_RangedMainHandIcon" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_d}"/>
+                                <Image x:Name="VSWS_RangedMainHandIcon" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_d}"/>
                             </Grid>
                             <!-- Focused icon -->
-                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=GwyVS_RangedMainHandOption, Converter={StaticResource BoolToVisibleConverter}}">
+                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=VSWS_RangedMainHandOption, Converter={StaticResource BoolToVisibleConverter}}">
                                 <Ellipse Style="{StaticResource equipmentMenuIconBG}"/>
-                                <Image x:Name="GwyVS_RangedMainHandIcon_h" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_h}" />
+                                <Image x:Name="VSWS_RangedMainHandIcon_h" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_h}" />
                             </Grid>
 
                             <TextBlock Style="{StaticResource equipmentMenuOptionLabel}" Text="{Binding Source='hcc6fff75g71f5g42e0gbd4bg91c52dcf72c8',Converter={StaticResource TranslatedStringConverter}}"/>
 
-                            <TextBlock x:Name="GwyVS_RangedMainHandSetting" Text="{Binding Source='h153c3f7cga3aeg4d25gb8dcg439be99a27e1',Converter={StaticResource TranslatedStringConverter}}" Style="{StaticResource equipmentMenuOptionSetting}"/>
+                            <TextBlock x:Name="VSWS_RangedMainHandSetting" Text="{Binding Source='h153c3f7cga3aeg4d25gb8dcg439be99a27e1',Converter={StaticResource TranslatedStringConverter}}" Style="{StaticResource equipmentMenuOptionSetting}"/>
 
                         </DockPanel>
                     </Button>
 
-                    <Button x:Name="GwyVS_RangedOffHandOption" Command="{Binding Tag.GwyVS_ToggleRangedOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=GwyVS_RangedOffHandState}" Style="{StaticResource FocusableContentControlStyle}" Margin="0,0,0,12" Visibility="Collapsed">
+                    <Button x:Name="VSWS_RangedOffHandOption" Command="{Binding Tag.VSWS_ToggleRangedOffHandCommand, ElementName=ContentRoot}" CommandParameter="{Binding ElementName=VSWS_RangedOffHandState}" Style="{StaticResource FocusableContentControlStyle}" Margin="0,0,0,12" Visibility="Collapsed">
                         <b:Interaction.Triggers>
                             <!-- Runs before the command: makes sure the mod acts on the character of this panel. -->
                             <b:EventTrigger EventName="Click">
-                                <b:InvokeCommandAction Command="{Binding Tag.GwyVS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
+                                <b:InvokeCommandAction Command="{Binding Tag.VSWS_CharacterCommand, ElementName=ContentRoot}" CommandParameter="{Binding CurrentPlayer.SelectedCharacter}"/>
                             </b:EventTrigger>
                         </b:Interaction.Triggers>
                         <DockPanel Margin="20,10">
                             <!-- Unfocused icon -->
-                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=GwyVS_RangedOffHandOption, Converter={StaticResource BoolToCollapsedConverter}}">
+                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=VSWS_RangedOffHandOption, Converter={StaticResource BoolToCollapsedConverter}}">
                                 <Ellipse Style="{StaticResource equipmentMenuIconBG}"/>
-                                <Image x:Name="GwyVS_RangedOffHandIcon" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_d}"/>
+                                <Image x:Name="VSWS_RangedOffHandIcon" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_d}"/>
                             </Grid>
                             <!-- Focused icon -->
-                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=GwyVS_RangedOffHandOption, Converter={StaticResource BoolToVisibleConverter}}">
+                            <Grid Style="{StaticResource equipmentMenuIconBGgrid}" Visibility="{Binding Path=(ls:MoveFocus.IsFocused), ElementName=VSWS_RangedOffHandOption, Converter={StaticResource BoolToVisibleConverter}}">
                                 <Ellipse Style="{StaticResource equipmentMenuIconBG}"/>
-                                <Image x:Name="GwyVS_RangedOffHandIcon_h" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_h}" />
+                                <Image x:Name="VSWS_RangedOffHandIcon_h" Style="{StaticResource equipmentMenuIconStyle}" Source="{StaticResource c_ico_equipmentVisible_h}" />
                             </Grid>
 
                             <TextBlock Style="{StaticResource equipmentMenuOptionLabel}" Text="{Binding Source='h3e2ec6f9g6f2eg47d1ga3ebg827473b216c6',Converter={StaticResource TranslatedStringConverter}}"/>
 
-                            <TextBlock x:Name="GwyVS_RangedOffHandSetting" Text="{Binding Source='h153c3f7cga3aeg4d25gb8dcg439be99a27e1',Converter={StaticResource TranslatedStringConverter}}" Style="{StaticResource equipmentMenuOptionSetting}"/>
+                            <TextBlock x:Name="VSWS_RangedOffHandSetting" Text="{Binding Source='h153c3f7cga3aeg4d25gb8dcg439be99a27e1',Converter={StaticResource TranslatedStringConverter}}" Style="{StaticResource equipmentMenuOptionSetting}"/>
 
                         </DockPanel>
                     </Button>
@@ -403,83 +403,83 @@
 
             <!-- Weapon slot visibility (mod) -->
 
-            <DataTrigger Binding="{Binding Text, ElementName=GwyVS_MeleeMainHandState}" Value="ActiveSet">
-                <Setter TargetName="GwyVS_MeleeMainHandSetting" Property="Text" Value="{Binding Source='h02045512g42b3g4e65gbb80g2860f50b9145',Converter={StaticResource TranslatedStringConverter}}"/>
-                <Setter TargetName="GwyVS_MeleeMainHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_meleeSet_d}"/>
-                <Setter TargetName="GwyVS_MeleeMainHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_meleeSet_h}"/>
+            <DataTrigger Binding="{Binding Text, ElementName=VSWS_MeleeMainHandState}" Value="ActiveSet">
+                <Setter TargetName="VSWS_MeleeMainHandSetting" Property="Text" Value="{Binding Source='h02045512g42b3g4e65gbb80g2860f50b9145',Converter={StaticResource TranslatedStringConverter}}"/>
+                <Setter TargetName="VSWS_MeleeMainHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_meleeSet_d}"/>
+                <Setter TargetName="VSWS_MeleeMainHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_meleeSet_h}"/>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Text, ElementName=GwyVS_MeleeMainHandState}" Value="CinematicsHidden">
-                <Setter TargetName="GwyVS_MeleeMainHandSetting" Property="Text" Value="{Binding Source='h4015e57fg601ag44eagac2fga543834139c8',Converter={StaticResource TranslatedStringConverter}}"/>
-                <Setter TargetName="GwyVS_MeleeMainHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_d}"/>
-                <Setter TargetName="GwyVS_MeleeMainHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_h}"/>
+            <DataTrigger Binding="{Binding Text, ElementName=VSWS_MeleeMainHandState}" Value="CinematicsHidden">
+                <Setter TargetName="VSWS_MeleeMainHandSetting" Property="Text" Value="{Binding Source='h4015e57fg601ag44eagac2fga543834139c8',Converter={StaticResource TranslatedStringConverter}}"/>
+                <Setter TargetName="VSWS_MeleeMainHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_d}"/>
+                <Setter TargetName="VSWS_MeleeMainHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_h}"/>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Text, ElementName=GwyVS_MeleeMainHandState}" Value="Hidden">
-                <Setter TargetName="GwyVS_MeleeMainHandSetting" Property="Text" Value="{Binding Source='hb8aca5ffg5327g491eg9cd9gcfcde0e667bd',Converter={StaticResource TranslatedStringConverter}}"/>
-                <Setter TargetName="GwyVS_MeleeMainHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_off_d}"/>
-                <Setter TargetName="GwyVS_MeleeMainHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_off_h}"/>
+            <DataTrigger Binding="{Binding Text, ElementName=VSWS_MeleeMainHandState}" Value="Hidden">
+                <Setter TargetName="VSWS_MeleeMainHandSetting" Property="Text" Value="{Binding Source='hb8aca5ffg5327g491eg9cd9gcfcde0e667bd',Converter={StaticResource TranslatedStringConverter}}"/>
+                <Setter TargetName="VSWS_MeleeMainHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_off_d}"/>
+                <Setter TargetName="VSWS_MeleeMainHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_off_h}"/>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Text, ElementName=GwyVS_MeleeOffHandState}" Value="ActiveSet">
-                <Setter TargetName="GwyVS_MeleeOffHandSetting" Property="Text" Value="{Binding Source='h02045512g42b3g4e65gbb80g2860f50b9145',Converter={StaticResource TranslatedStringConverter}}"/>
-                <Setter TargetName="GwyVS_MeleeOffHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_meleeSet_d}"/>
-                <Setter TargetName="GwyVS_MeleeOffHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_meleeSet_h}"/>
+            <DataTrigger Binding="{Binding Text, ElementName=VSWS_MeleeOffHandState}" Value="ActiveSet">
+                <Setter TargetName="VSWS_MeleeOffHandSetting" Property="Text" Value="{Binding Source='h02045512g42b3g4e65gbb80g2860f50b9145',Converter={StaticResource TranslatedStringConverter}}"/>
+                <Setter TargetName="VSWS_MeleeOffHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_meleeSet_d}"/>
+                <Setter TargetName="VSWS_MeleeOffHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_meleeSet_h}"/>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Text, ElementName=GwyVS_MeleeOffHandState}" Value="CinematicsHidden">
-                <Setter TargetName="GwyVS_MeleeOffHandSetting" Property="Text" Value="{Binding Source='h4015e57fg601ag44eagac2fga543834139c8',Converter={StaticResource TranslatedStringConverter}}"/>
-                <Setter TargetName="GwyVS_MeleeOffHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_d}"/>
-                <Setter TargetName="GwyVS_MeleeOffHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_h}"/>
+            <DataTrigger Binding="{Binding Text, ElementName=VSWS_MeleeOffHandState}" Value="CinematicsHidden">
+                <Setter TargetName="VSWS_MeleeOffHandSetting" Property="Text" Value="{Binding Source='h4015e57fg601ag44eagac2fga543834139c8',Converter={StaticResource TranslatedStringConverter}}"/>
+                <Setter TargetName="VSWS_MeleeOffHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_d}"/>
+                <Setter TargetName="VSWS_MeleeOffHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_h}"/>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Text, ElementName=GwyVS_MeleeOffHandState}" Value="Hidden">
-                <Setter TargetName="GwyVS_MeleeOffHandSetting" Property="Text" Value="{Binding Source='hb8aca5ffg5327g491eg9cd9gcfcde0e667bd',Converter={StaticResource TranslatedStringConverter}}"/>
-                <Setter TargetName="GwyVS_MeleeOffHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_off_d}"/>
-                <Setter TargetName="GwyVS_MeleeOffHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_off_h}"/>
+            <DataTrigger Binding="{Binding Text, ElementName=VSWS_MeleeOffHandState}" Value="Hidden">
+                <Setter TargetName="VSWS_MeleeOffHandSetting" Property="Text" Value="{Binding Source='hb8aca5ffg5327g491eg9cd9gcfcde0e667bd',Converter={StaticResource TranslatedStringConverter}}"/>
+                <Setter TargetName="VSWS_MeleeOffHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_off_d}"/>
+                <Setter TargetName="VSWS_MeleeOffHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_off_h}"/>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Text, ElementName=GwyVS_RangedMainHandState}" Value="ActiveSet">
-                <Setter TargetName="GwyVS_RangedMainHandSetting" Property="Text" Value="{Binding Source='h02045512g42b3g4e65gbb80g2860f50b9145',Converter={StaticResource TranslatedStringConverter}}"/>
-                <Setter TargetName="GwyVS_RangedMainHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_rangedSet_d}"/>
-                <Setter TargetName="GwyVS_RangedMainHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_rangedSet_h}"/>
+            <DataTrigger Binding="{Binding Text, ElementName=VSWS_RangedMainHandState}" Value="ActiveSet">
+                <Setter TargetName="VSWS_RangedMainHandSetting" Property="Text" Value="{Binding Source='h02045512g42b3g4e65gbb80g2860f50b9145',Converter={StaticResource TranslatedStringConverter}}"/>
+                <Setter TargetName="VSWS_RangedMainHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_rangedSet_d}"/>
+                <Setter TargetName="VSWS_RangedMainHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_rangedSet_h}"/>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Text, ElementName=GwyVS_RangedMainHandState}" Value="CinematicsHidden">
-                <Setter TargetName="GwyVS_RangedMainHandSetting" Property="Text" Value="{Binding Source='h4015e57fg601ag44eagac2fga543834139c8',Converter={StaticResource TranslatedStringConverter}}"/>
-                <Setter TargetName="GwyVS_RangedMainHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_d}"/>
-                <Setter TargetName="GwyVS_RangedMainHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_h}"/>
+            <DataTrigger Binding="{Binding Text, ElementName=VSWS_RangedMainHandState}" Value="CinematicsHidden">
+                <Setter TargetName="VSWS_RangedMainHandSetting" Property="Text" Value="{Binding Source='h4015e57fg601ag44eagac2fga543834139c8',Converter={StaticResource TranslatedStringConverter}}"/>
+                <Setter TargetName="VSWS_RangedMainHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_d}"/>
+                <Setter TargetName="VSWS_RangedMainHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_h}"/>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Text, ElementName=GwyVS_RangedMainHandState}" Value="Hidden">
-                <Setter TargetName="GwyVS_RangedMainHandSetting" Property="Text" Value="{Binding Source='hb8aca5ffg5327g491eg9cd9gcfcde0e667bd',Converter={StaticResource TranslatedStringConverter}}"/>
-                <Setter TargetName="GwyVS_RangedMainHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_off_d}"/>
-                <Setter TargetName="GwyVS_RangedMainHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_off_h}"/>
+            <DataTrigger Binding="{Binding Text, ElementName=VSWS_RangedMainHandState}" Value="Hidden">
+                <Setter TargetName="VSWS_RangedMainHandSetting" Property="Text" Value="{Binding Source='hb8aca5ffg5327g491eg9cd9gcfcde0e667bd',Converter={StaticResource TranslatedStringConverter}}"/>
+                <Setter TargetName="VSWS_RangedMainHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_off_d}"/>
+                <Setter TargetName="VSWS_RangedMainHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_off_h}"/>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Text, ElementName=GwyVS_RangedOffHandState}" Value="ActiveSet">
-                <Setter TargetName="GwyVS_RangedOffHandSetting" Property="Text" Value="{Binding Source='h02045512g42b3g4e65gbb80g2860f50b9145',Converter={StaticResource TranslatedStringConverter}}"/>
-                <Setter TargetName="GwyVS_RangedOffHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_rangedSet_d}"/>
-                <Setter TargetName="GwyVS_RangedOffHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_rangedSet_h}"/>
+            <DataTrigger Binding="{Binding Text, ElementName=VSWS_RangedOffHandState}" Value="ActiveSet">
+                <Setter TargetName="VSWS_RangedOffHandSetting" Property="Text" Value="{Binding Source='h02045512g42b3g4e65gbb80g2860f50b9145',Converter={StaticResource TranslatedStringConverter}}"/>
+                <Setter TargetName="VSWS_RangedOffHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_rangedSet_d}"/>
+                <Setter TargetName="VSWS_RangedOffHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_rangedSet_h}"/>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Text, ElementName=GwyVS_RangedOffHandState}" Value="CinematicsHidden">
-                <Setter TargetName="GwyVS_RangedOffHandSetting" Property="Text" Value="{Binding Source='h4015e57fg601ag44eagac2fga543834139c8',Converter={StaticResource TranslatedStringConverter}}"/>
-                <Setter TargetName="GwyVS_RangedOffHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_d}"/>
-                <Setter TargetName="GwyVS_RangedOffHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_h}"/>
+            <DataTrigger Binding="{Binding Text, ElementName=VSWS_RangedOffHandState}" Value="CinematicsHidden">
+                <Setter TargetName="VSWS_RangedOffHandSetting" Property="Text" Value="{Binding Source='h4015e57fg601ag44eagac2fga543834139c8',Converter={StaticResource TranslatedStringConverter}}"/>
+                <Setter TargetName="VSWS_RangedOffHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_d}"/>
+                <Setter TargetName="VSWS_RangedOffHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_dialogueOnly_h}"/>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Text, ElementName=GwyVS_RangedOffHandState}" Value="Hidden">
-                <Setter TargetName="GwyVS_RangedOffHandSetting" Property="Text" Value="{Binding Source='hb8aca5ffg5327g491eg9cd9gcfcde0e667bd',Converter={StaticResource TranslatedStringConverter}}"/>
-                <Setter TargetName="GwyVS_RangedOffHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_off_d}"/>
-                <Setter TargetName="GwyVS_RangedOffHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_off_h}"/>
+            <DataTrigger Binding="{Binding Text, ElementName=VSWS_RangedOffHandState}" Value="Hidden">
+                <Setter TargetName="VSWS_RangedOffHandSetting" Property="Text" Value="{Binding Source='hb8aca5ffg5327g491eg9cd9gcfcde0e667bd',Converter={StaticResource TranslatedStringConverter}}"/>
+                <Setter TargetName="VSWS_RangedOffHandIcon" Property="Source" Value="{StaticResource c_ico_equipment_off_d}"/>
+                <Setter TargetName="VSWS_RangedOffHandIcon_h" Property="Source" Value="{StaticResource c_ico_equipment_off_h}"/>
             </DataTrigger>
 
             <DataTrigger Binding="{Binding CurrentPlayer.SelectedCharacter.PlayerCharacterProperties.HasRangedSetActive}" Value="True">
-                <Setter TargetName="GwyVS_MeleeMainHandOption" Property="Visibility" Value="Collapsed"/>
-                <Setter TargetName="GwyVS_MeleeOffHandOption" Property="Visibility" Value="Collapsed"/>
-                <Setter TargetName="GwyVS_RangedMainHandOption" Property="Visibility" Value="Visible"/>
-                <Setter TargetName="GwyVS_RangedOffHandOption" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="VSWS_MeleeMainHandOption" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="VSWS_MeleeOffHandOption" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="VSWS_RangedMainHandOption" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="VSWS_RangedOffHandOption" Property="Visibility" Value="Visible"/>
             </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>

@@ -1,14 +1,14 @@
 -- The visibility buttons next to the weapon slots.
 --
 -- The XAML side (GUI/Library/Lib_Keyboard.xaml) wraps each weapon slot in
--- GwyVS_WeaponEQTemplate: the slot plus a copy of the game's visibility button.
+-- VSWS_WeaponEQTemplate: the slot plus a copy of the game's visibility button.
 -- The button shows the mode named in a hidden text block of the wrapper.
 -- When the wrapper appears, when the mouse enters it and when the button is
 -- clicked, it runs three commands in this order:
 --
---   GwyVS_CharacterCommand  with the character shown;
---   GwyVS_SlotCommand       with the slot;
---   GwyVS_ShowCommand or GwyVS_ToggleCommand  with the text block.
+--   VSWS_CharacterCommand  with the character shown;
+--   VSWS_SlotCommand       with the slot;
+--   VSWS_ShowCommand or VSWS_ToggleCommand  with the text block.
 --
 -- This side supplies those commands. They live on one object placed in the
 -- Tag of ContentRoot - the container of every widget, which pages reach by
@@ -24,7 +24,7 @@ local UI = {}
 local Applier, requestMode -- handed in by Register
 
 -- A registered type cannot change until the game restarts; rename it when its commands change.
-local COMMANDS_TYPE = "GwyVS_Commands"
+local COMMANDS_TYPE = "VSWS_Commands"
 
 local function get(fn)
     local ok, v = pcall(fn)
@@ -113,14 +113,14 @@ local function install(root)
     -- Keyboard UI: character, slot, then show/toggle.
     -- Controller UI: character once, then one show/toggle command per slot.
     local fields = {
-        GwyVS_CharacterCommand = { Type = "Command" },
-        GwyVS_SlotCommand = { Type = "Command" },
-        GwyVS_ShowCommand = { Type = "Command" },
-        GwyVS_ToggleCommand = { Type = "Command" },
+        VSWS_CharacterCommand = { Type = "Command" },
+        VSWS_SlotCommand = { Type = "Command" },
+        VSWS_ShowCommand = { Type = "Command" },
+        VSWS_ToggleCommand = { Type = "Command" },
     }
     for _, slot in ipairs(State.SLOTS) do
-        fields["GwyVS_Show" .. slot .. "Command"] = { Type = "Command" }
-        fields["GwyVS_Toggle" .. slot .. "Command"] = { Type = "Command" }
+        fields["VSWS_Show" .. slot .. "Command"] = { Type = "Command" }
+        fields["VSWS_Toggle" .. slot .. "Command"] = { Type = "Command" }
     end
     -- A registered type survives until the game restarts, so "already there" is fine.
     pcall(Ext.UI.RegisterType, COMMANDS_TYPE, fields)
@@ -134,13 +134,13 @@ local function install(root)
         log("cannot create the commands object; the visibility buttons will not respond")
         return
     end
-    commands.GwyVS_CharacterCommand:SetHandler(handler(onCharacter, "character"))
-    commands.GwyVS_SlotCommand:SetHandler(handler(onSlot, "slot"))
-    commands.GwyVS_ShowCommand:SetHandler(handler(onShow, "show"))
-    commands.GwyVS_ToggleCommand:SetHandler(handler(onToggle, "toggle"))
+    commands.VSWS_CharacterCommand:SetHandler(handler(onCharacter, "character"))
+    commands.VSWS_SlotCommand:SetHandler(handler(onSlot, "slot"))
+    commands.VSWS_ShowCommand:SetHandler(handler(onShow, "show"))
+    commands.VSWS_ToggleCommand:SetHandler(handler(onToggle, "toggle"))
     for _, slot in ipairs(State.SLOTS) do
-        commands["GwyVS_Show" .. slot .. "Command"]:SetHandler(handler(onShow, "show", slot))
-        commands["GwyVS_Toggle" .. slot .. "Command"]:SetHandler(handler(onToggle, "toggle", slot))
+        commands["VSWS_Show" .. slot .. "Command"]:SetHandler(handler(onShow, "show", slot))
+        commands["VSWS_Toggle" .. slot .. "Command"]:SetHandler(handler(onToggle, "toggle", slot))
     end
 
     root.Tag = commands

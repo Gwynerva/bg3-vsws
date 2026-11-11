@@ -2,12 +2,12 @@
 
 Three templates are produced:
 
-  * GwyVS_VisibilityButtonTemplate - the game's visibility button, reading its
+  * VSWS_VisibilityButtonTemplate - the game's visibility button, reading its
     state from a text block the mod writes to, with the mod's labels;
-  * GwyVS_WeaponEQTemplate - a weapon slot plus that button, modelled on the
+  * VSWS_WeaponEQTemplate - a weapon slot plus that button, modelled on the
     helmet's wrapper; it tells the mod which character and slot it shows;
   * CharacterEquipmentTemplate - the game's template with the four weapon
-    slots using GwyVS_WeaponEQTemplate. Nothing else in it is changed.
+    slots using VSWS_WeaponEQTemplate. Nothing else in it is changed.
 
 Regenerate after a game update:
 
@@ -68,28 +68,28 @@ def actions(last):
                 f'CommandParameter="{parameter}"/>')
     pad = "\n                    "
     return pad.join([
-        call("GwyVS_CharacterCommand", "{Binding DataContext, ElementName=EquipmentSlots}"),
-        call("GwyVS_SlotCommand", "{Binding DataContext, ElementName=GwyVS_Root}"),
-        call(last, "{Binding ElementName=GwyVS_State}"),
+        call("VSWS_CharacterCommand", "{Binding DataContext, ElementName=EquipmentSlots}"),
+        call("VSWS_SlotCommand", "{Binding DataContext, ElementName=VSWS_Root}"),
+        call(last, "{Binding ElementName=VSWS_State}"),
     ])
 
 
-WEAPON_EQ_TEMPLATE = f"""    <ControlTemplate x:Key="GwyVS_WeaponEQTemplate" TargetType="Control">
-        <Grid x:Name="GwyVS_Root" HorizontalAlignment="Left">
+WEAPON_EQ_TEMPLATE = f"""    <ControlTemplate x:Key="VSWS_WeaponEQTemplate" TargetType="Control">
+        <Grid x:Name="VSWS_Root" HorizontalAlignment="Left">
             <b:Interaction.Triggers>
                 <b:EventTrigger EventName="Loaded">
-                    {actions("GwyVS_ShowCommand")}
+                    {actions("VSWS_ShowCommand")}
                 </b:EventTrigger>
                 <b:EventTrigger EventName="MouseEnter">
-                    {actions("GwyVS_ShowCommand")}
+                    {actions("VSWS_ShowCommand")}
                 </b:EventTrigger>
             </b:Interaction.Triggers>
-            <TextBlock x:Name="GwyVS_State" Text="Visible" Visibility="Collapsed"/>
+            <TextBlock x:Name="VSWS_State" Text="Visible" Visibility="Collapsed"/>
             <ls:LSButton x:Name="EquipmentWeaponSlot" Style="{{StaticResource EquipmentSlotStyle}}" Tag="{{TemplateBinding Tag}}"/>
-            <ls:LSButton x:Name="VisibilityButton" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-4,-40,0,0" Template="{{StaticResource GwyVS_VisibilityButtonTemplate}}" Opacity="0">
+            <ls:LSButton x:Name="VisibilityButton" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-4,-40,0,0" Template="{{StaticResource VSWS_VisibilityButtonTemplate}}" Opacity="0">
                 <b:Interaction.Triggers>
                     <b:EventTrigger EventName="Click">
-                    {actions("GwyVS_ToggleCommand")}
+                    {actions("VSWS_ToggleCommand")}
                     </b:EventTrigger>
                 </b:Interaction.Triggers>
             </ls:LSButton>
@@ -108,7 +108,7 @@ SLOT_Z = ' Panel.ZIndex="{Binding IsSelecting, Converter={StaticResource BoolToI
 # The same for a weapon slot, plus: on top of its neighbours while the mouse is
 # over it. A later slot in the row is otherwise drawn over the label that
 # opens from an earlier one.
-WEAPON_SLOT_STYLE = """    <Style x:Key="GwyVS_WeaponSlotStyle" TargetType="Control">
+WEAPON_SLOT_STYLE = """    <Style x:Key="VSWS_WeaponSlotStyle" TargetType="Control">
         <Setter Property="Panel.ZIndex" Value="{Binding IsSelecting, Converter={StaticResource BoolToIntConverter}, ConverterParameter=20}"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
@@ -126,10 +126,10 @@ def template(lines, key):
 
 def visibility_button(lines):
     text = "\n".join(template(lines, "VisibilityButtonTemplate"))
-    text = text.replace('x:Key="VisibilityButtonTemplate"', 'x:Key="GwyVS_VisibilityButtonTemplate"')
+    text = text.replace('x:Key="VisibilityButtonTemplate"', 'x:Key="VSWS_VisibilityButtonTemplate"')
     if text.count("{Binding VisibilityType}") != 3:
         sys.exit("the visibility button template no longer has three state triggers")
-    text = text.replace("{Binding VisibilityType}", "{Binding Text, ElementName=GwyVS_State}")
+    text = text.replace("{Binding VisibilityType}", "{Binding Text, ElementName=VSWS_State}")
     for old, new in LABELS.items():
         if old not in text:
             sys.exit(f"label {old} not found in the visibility button template")
@@ -180,14 +180,14 @@ def label_plate(text):
     for i in range(label, label_end + 1):
         lines[i] = "    " + lines[i]
     lines.insert(label_end + 1, pad + "</Border>")
-    lines.insert(label, pad + f'<Border x:Name="GwyVS_Label" Visibility="Collapsed" IsHitTestVisible="False" '
+    lines.insert(label, pad + f'<Border x:Name="VSWS_Label" Visibility="Collapsed" IsHitTestVisible="False" '
                  f'HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{LABEL_GAP},0,-{LABEL_REACH},0" '
                  f'Background="{PLATE_FILL}" BorderBrush="{PLATE_EDGE}" BorderThickness="2" CornerRadius="6" Padding="14,4,14,6">')
 
     hover = '<Setter Property="Visibility" Value="Visible" TargetName="HelmetToggleString"/>'
     if sum(1 for l in lines if hover in l) != 1:
         sys.exit("the trigger that shows the label on hover was not found")
-    lines = [l.replace(hover, '<Setter Property="Visibility" Value="Visible" TargetName="GwyVS_Label"/>') for l in lines]
+    lines = [l.replace(hover, '<Setter Property="Visibility" Value="Visible" TargetName="VSWS_Label"/>') for l in lines]
 
     # Ranged slots sit on the right: their label opens to the left.
     out = []
@@ -195,8 +195,8 @@ def label_plate(text):
         out.append(l)
         if '<DataTrigger Binding="{Binding SlotType}" Value="Ranged' in l:
             pad = l[:len(l) - len(l.lstrip())] + "    "
-            out.append(pad + '<Setter Property="HorizontalAlignment" TargetName="GwyVS_Label" Value="Right"/>')
-            out.append(pad + f'<Setter Property="Margin" TargetName="GwyVS_Label" Value="-{LABEL_REACH},0,{LABEL_GAP},0"/>')
+            out.append(pad + '<Setter Property="HorizontalAlignment" TargetName="VSWS_Label" Value="Right"/>')
+            out.append(pad + f'<Setter Property="Margin" TargetName="VSWS_Label" Value="-{LABEL_REACH},0,{LABEL_GAP},0"/>')
     if len(out) != len(lines) + 4:
         sys.exit("expected two ranged-slot triggers to mirror the label in")
     return "\n".join(out)
@@ -216,7 +216,7 @@ def active_set_state(text):
         sys.exit("the visibility button template has no disabled-cover rectangle to put the mark before")
     pad = lines[cover][:len(lines[cover]) - len(lines[cover].lstrip())]
     lines[cover:cover] = [
-        pad + f'<Image x:Name="GwyVS_SetMark" Source="{SET_MARK_MELEE}" Width="30" Height="30" '
+        pad + f'<Image x:Name="VSWS_SetMark" Source="{SET_MARK_MELEE}" Width="30" Height="30" '
               'HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" '
               'Visibility="Collapsed" IsHitTestVisible="False">',
         pad + '    <Image.RenderTransform>',
@@ -229,7 +229,7 @@ def active_set_state(text):
     ]
 
     # The state: a copy of the "visible" trigger with its own label and the mark shown.
-    start = next((i for i, l in enumerate(lines) if "ElementName=GwyVS_State}" in l and 'Value="Visible"' in l), None)
+    start = next((i for i, l in enumerate(lines) if "ElementName=VSWS_State}" in l and 'Value="Visible"' in l), None)
     if start is None:
         sys.exit("the trigger for the visible state was not found")
     end = next(i for i in range(start, len(lines)) if "</DataTrigger>" in lines[i])
@@ -239,7 +239,7 @@ def active_set_state(text):
         sys.exit("the visible state's label was not found in its trigger")
     block = [l.replace('Value="Visible"', 'Value="ActiveSet"').replace(visible_label, ACTIVE_SET_LABEL) for l in block]
     inner = block[1][:len(block[1]) - len(block[1].lstrip())]
-    block.insert(len(block) - 1, inner + '<Setter Property="Visibility" TargetName="GwyVS_SetMark" Value="Visible"/>')
+    block.insert(len(block) - 1, inner + '<Setter Property="Visibility" TargetName="VSWS_SetMark" Value="Visible"/>')
 
     # On the ranged slots the mark is the ranged set's crosshair, upright.
     outer = block[0][:len(block[0]) - len(block[0].lstrip())]
@@ -248,10 +248,10 @@ def active_set_state(text):
         ranged += [
             "",
             outer + f'<DataTrigger Binding="{{Binding SlotType}}" Value="{slot}">',
-            inner + f'<Setter Property="Source" TargetName="GwyVS_SetMark" Value="{SET_MARK_RANGED}"/>',
-            inner + '<Setter Property="Width" TargetName="GwyVS_SetMark" Value="23"/>',
-            inner + '<Setter Property="Height" TargetName="GwyVS_SetMark" Value="23"/>',
-            inner + '<Setter Property="RenderTransform" TargetName="GwyVS_SetMark">',
+            inner + f'<Setter Property="Source" TargetName="VSWS_SetMark" Value="{SET_MARK_RANGED}"/>',
+            inner + '<Setter Property="Width" TargetName="VSWS_SetMark" Value="23"/>',
+            inner + '<Setter Property="Height" TargetName="VSWS_SetMark" Value="23"/>',
+            inner + '<Setter Property="RenderTransform" TargetName="VSWS_SetMark">',
             inner + '    <Setter.Value>',
             inner + '        <RotateTransform Angle="0"/>',
             inner + '    </Setter.Value>',
@@ -268,7 +268,7 @@ def equipment(lines):
     for i, line in enumerate(block):
         for slot in SLOTS:
             if f'x:Name="{slot}"' in line:
-                new = line.replace(f'<ls:LSButton x:Name="{slot}"', '<Control Template="{StaticResource GwyVS_WeaponEQTemplate}"')
+                new = line.replace(f'<ls:LSButton x:Name="{slot}"', '<Control Template="{StaticResource VSWS_WeaponEQTemplate}"')
                 new = new.replace(' Style="{StaticResource EquipmentSlotStyle}"', "")
                 if new == line or "LSButton" in new:
                     sys.exit(f"could not rewrite the line for {slot}")
@@ -276,7 +276,7 @@ def equipment(lines):
                 # set on the element it could not be raised while the mouse is over it.
                 if SLOT_Z not in new:
                     sys.exit(f"the z-order binding of {slot} is not where it used to be")
-                new = new.replace(SLOT_Z, ' Style="{StaticResource GwyVS_WeaponSlotStyle}"')
+                new = new.replace(SLOT_Z, ' Style="{StaticResource VSWS_WeaponSlotStyle}"')
                 block[i] = new
                 replaced += 1
     if replaced != len(SLOTS):
