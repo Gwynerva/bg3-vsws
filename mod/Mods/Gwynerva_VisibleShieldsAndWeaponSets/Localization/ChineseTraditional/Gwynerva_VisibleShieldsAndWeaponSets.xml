@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentList>
+    <content contentuid="h153c3f7cga3aeg4d25gb8dcg439be99a27e1" version="1">一律顯示</content>
+    <content contentuid="h02045512g42b3g4e65gbb80g2860f50b9145" version="1">目前套裝時顯示</content>
+    <content contentuid="h4015e57fg601ag44eagac2fga543834139c8" version="1">對話時隱藏</content>
+    <content contentuid="hb8aca5ffg5327g491eg9cd9gcfcde0e667bd" version="1">一律隱藏</content>
+    <content contentuid="hcc6fff75g71f5g42e0gbd4bg91c52dcf72c8" version="1">主手武器</content>
+    <content contentuid="h3e2ec6f9g6f2eg47d1ga3ebg827473b216c6" version="1">副手武器</content>
+</contentList>
