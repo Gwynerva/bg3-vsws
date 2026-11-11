@@ -7,4 +7,4 @@ out_dir="${VSWS_SHOTS:-${TEMP:-/tmp}/vsws-shots}"
 mkdir -p "$out_dir"
 sh "$dir/pad.sh" "$@"
 sleep 0.8
-powershell -NoProfile -ExecutionPolicy Bypass -File "$dir/shot.ps1" -Out "$(cygpath -w "$out_dir")\$name.jpg" 2>&1 | tail -1
+powershell -NoProfile -ExecutionPolicy Bypass -File "$dir/shot.ps1" -Out "$(cygpath -w "$out_dir/$name.jpg")" 2>&1 | tail -1

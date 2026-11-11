@@ -23,6 +23,8 @@ to draw.
   | Always hide | never |
 
   A weapon in your hands is always shown. Settings are per character and saved with the game.
+- Works in multiplayer and split screen: everyone sees the same thing, and only the player a
+  character belongs to can change its settings.
 - Works in the world, in dialogues and cutscenes, and in photo mode.
 - **Keyboard and mouse:** hover a weapon slot in the character sheet or the party panel and click the
   eye button above it.
@@ -51,7 +53,6 @@ manager.
 
 - Script Extender still calls a few of the fields this mod relies on by placeholder names and will
   rename them in a future version. The mod will need an update when that happens.
-- Not tested yet: multiplayer and split screen.
 
 ## Building from source
 

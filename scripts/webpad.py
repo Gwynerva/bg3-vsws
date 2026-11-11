@@ -8,12 +8,14 @@ The PC's keyboard and mouse are not involved, so the game stays in controller
 mode. Needs the ViGEmBus driver and `pip install vgamepad`.
 """
 import http.server
+import os
 import socket
 import sys
 
 import vgamepad as vg
 
-PORT = 8777
+# A second controller: run another copy with WEBPAD_PORT set to another port.
+PORT = int(os.environ.get("WEBPAD_PORT", "8777"))
 B = vg.XUSB_BUTTON
 BUTTONS = {
     "A": B.XUSB_GAMEPAD_A, "B": B.XUSB_GAMEPAD_B, "X": B.XUSB_GAMEPAD_X, "Y": B.XUSB_GAMEPAD_Y,
