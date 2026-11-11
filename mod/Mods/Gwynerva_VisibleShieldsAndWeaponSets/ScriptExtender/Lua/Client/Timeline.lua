@@ -16,6 +16,7 @@
 -- changed, and otherwise only the models switched off earlier are looked at.
 
 local State = Ext.Require("Shared/State.lua")
+local Layers = Ext.Require("Client/Layers.lua")
 
 local Timeline = {}
 local Applier -- handed in by Register
@@ -52,6 +53,9 @@ local DRESS_CHECK_EVERY_FRAMES = 3
 local DRESS_TIMEOUT_FRAMES = 600
 local LOAD_TIMEOUT_FRAMES = 300
 local CLEANUP_DELAY_FRAMES = 60
+
+-- How often a dummy's stowed weapons are arranged in layers again.
+local ARRANGE_EVERY_FRAMES = 15
 
 local actors = {}   -- uuid -> party character currently in a scene
 local records = {}  -- dummy -> what is known about it (see track)
@@ -404,6 +408,14 @@ local function apply(dummy, record)
         end
         fullPass(dummy, record, attachments, modes)
         record.Count, record.ModesVersion = count, version
+        record.Arranged = nil
+    end
+    -- Stowed weapons in layers: at once after a change, then now and then,
+    -- as a model may be swapped without the count changing.
+    if not record.Arranged or frame - record.Arranged >= ARRANGE_EVERY_FRAMES then
+        record.Arranged = frame
+        local ok, err = pcall(Layers.Arrange, dummy, function(index) return record.Hidden[index] ~= nil end)
+        if not ok then State.Warn("arranging a dummy failed:", err) end
     end
     ensureOtherSet(dummy, record, modes)
 end

@@ -102,7 +102,7 @@ local function join(...)
 end
 
 function State.Log(...)
-    Ext.Utils.Print("[Visible Shields] " .. join(...))
+    Ext.Utils.Print("[Gwynerva VSWS] " .. join(...))
 end
 
 local debugLines = {}
@@ -125,7 +125,7 @@ function State.Warn(...)
     if warned[line] then return end
     warned[line] = true
     local print = Ext.Log and Ext.Log.PrintWarning or Ext.Utils.Print
-    print("[Visible Shields] " .. line)
+    print("[Gwynerva VSWS] " .. line)
 end
 
 return State

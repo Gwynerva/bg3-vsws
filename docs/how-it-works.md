@@ -57,6 +57,26 @@ its slots directly, with the weapon set in use only.
 
 What does not work: queueing `InventoryEvents` on the equipment visuals system — a dummy ignores them.
 
+## Layers on the back — `Client/Layers.lua`
+
+With both sets and the shield shown, several things hang on the back at the same depth: the sheath
+bones (`Dummy_Sheath_Upper_L/R`, `Dummy_Sheath_Lower_L/R`, `Dummy_Sheath_Ranged`, `Dummy_Sheath_Shield`)
+sit within a centimetre or two of one another. So what is stowed there is spread out, nearest first:
+the melee set, the ranged set, the shield.
+
+- Every model attached to a character (`Visual.Visual.Attachments[i]`) has an `Offset` in the frame of
+  the bone it hangs on, which the engine applies each frame. A layer is pushed out along the bone's Y
+  axis by the thickness of the layers actually present beneath it; with nothing beneath, it stays
+  where the game puts it. A weapon in the hands (off a sheath bone) gets no offset.
+- Which way a bone's Y axis points differs from bone to bone and was measured in game (the table in
+  `Layers.lua`). A bone that is not in the table is left alone.
+- Which slot an attachment belongs to is told by comparing its `Visual` with the slot's models in
+  `ClientEquipmentVisuals.Equipment[slot].SubVisuals`.
+- In the world the offsets are written for a few seconds after an entity's rows change (models are
+  rebuilt with a delay); on a timeline dummy, after each change and every few frames.
+- `!vsws_layers [melee] [ranged]` changes the two thicknesses (in centimetres) until the game
+  restarts, to try values out.
+
 ## Buttons — `Client/UI.lua`, `GUI/Library/*.xaml`
 
 The XAML is generated from the game's own files (`scripts/gen_ui.py`, `scripts/gen_ui_controller.py`);
@@ -87,7 +107,7 @@ Constraints that shaped this:
 - `State.DEBUG = true` prints each step to the Script Extender console and to
   `Script Extender/Gwynerva_VisibleShields/debug.log`.
 - Console (client context): `!vsws <main|shield|ranged|rangedoff|all> [visible|set|dialog|hidden]`,
-  `!vsws_dump`.
+  `!vsws_dump`, `!vsws_layers`.
 - `scripts/webpad.py` is a virtual controller driven from a web page, for testing the controller UI
   without a controller (needs the ViGEmBus driver).
 - `tools/`, `vanilla/` and `reference/` are not in the repository: third-party tools, files extracted

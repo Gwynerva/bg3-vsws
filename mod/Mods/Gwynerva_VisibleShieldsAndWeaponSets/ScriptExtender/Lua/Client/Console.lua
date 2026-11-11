@@ -1,8 +1,11 @@
 -- Console commands (Script Extender console, client context):
 --   !vsws <slot|all> [mode]   set a mode on the controlled character (no mode = next mode)
 --   !vsws_dump                write what the mod sees to a file, for bug reports
+--   !vsws_layers [melee] [ranged]   how far, in centimetres, the melee and the ranged layer
+--                             push out what is stowed on top of them (until the game restarts)
 
 local State = Ext.Require("Shared/State.lua")
+local Layers = Ext.Require("Client/Layers.lua")
 
 local Console = {}
 
@@ -62,6 +65,14 @@ function Console.Register(Applier, requestMode)
         for _, slot in ipairs(slots) do
             requestMode(uuid, slot, State.ParseMode(modeArg))
         end
+    end)
+
+    Ext.RegisterConsoleCommand("vsws_layers", function(_, melee, ranged)
+        local t = Layers.Thickness
+        t.Melee = (tonumber(melee) or t.Melee * 100) / 100
+        t.Ranged = (tonumber(ranged) or t.Ranged * 100) / 100
+        Applier.Rearrange()
+        State.Log(("layers: melee %.1f cm, ranged %.1f cm"):format(t.Melee * 100, t.Ranged * 100))
     end)
 
     Ext.RegisterConsoleCommand("vsws_dump", function()

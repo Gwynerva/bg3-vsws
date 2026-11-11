@@ -12,6 +12,8 @@ to draw.
 - **Shield on the back** while weapons are sheathed — for the party, companions and NPCs.
 - **Both weapon sets visible**: the bow stays on your back while you hold the sword, and the other
   way round.
+- **Layers instead of clipping**: on the back, the melee set lies nearest, the ranged set over it and
+  the shield on top, each moved out only as far as what is under it requires.
 - **A toggle next to each weapon slot** (melee main hand, melee off-hand, ranged main hand, ranged
   off-hand) with four settings:
 

@@ -13,6 +13,7 @@
 -- have this component.
 
 local State = Ext.Require("Shared/State.lua")
+local Layers = Ext.Require("Client/Layers.lua")
 
 local Applier = {}
 
@@ -30,10 +31,17 @@ local DUMMY_UNSHEATH = { [0] = "Instrument", [1] = "Melee", [2] = "Ranged", [3] 
 local MODEL_RETRY_MS = 250
 local MODEL_MAX_WAITS = 20
 
+-- After an entity's rows change, its models are rebuilt over the next moments
+-- (a weapon being put away takes about a second). For that long its stowed
+-- weapons are arranged in layers again, this often.
+local SETTLE_FRAMES = 240
+local ARRANGE_EVERY_FRAMES = 6
+
 local tracked = {}   -- entities that have the component
 local pending = {}   -- entities to bring in line (and flag as changed) this frame
 local stash = {}     -- stash[entity][slot] = a row taken out, to be put back
 local waited = {}    -- waited[entity][slot] = times hiding was put off for a model still loading
+local settling = {}  -- settling[entity] = frames left in which its stowed weapons are still arranged
 local modeCache = {} -- uuid -> modes, as last told by the server
 local modesVersion = 0
 
@@ -226,6 +234,22 @@ end
 local function safeApply(entity)
     local ok, err = pcall(Applier.Apply, entity)
     if not ok then State.Warn("apply failed:", err) end
+    settling[entity] = SETTLE_FRAMES
+end
+
+--- Arrange the stowed weapons of the entities whose models may still be changing.
+local function arrangeSettling()
+    for entity, left in pairs(settling) do
+        if not tracked[entity] then
+            settling[entity] = nil
+        else
+            if left % ARRANGE_EVERY_FRAMES == 0 then
+                local ok, err = pcall(Layers.Arrange, entity)
+                if not ok then State.Warn("arranging failed:", err) end
+            end
+            settling[entity] = left > 1 and left - 1 or nil
+        end
+    end
 end
 
 -- -------------------------------------------------------------------- events
@@ -240,6 +264,11 @@ function Applier.SetModes(uuid, modes)
     end
 end
 
+--- Arrange everybody's stowed weapons again (after the layer settings changed).
+function Applier.Rearrange()
+    for entity in pairs(tracked) do settling[entity] = ARRANGE_EVERY_FRAMES end
+end
+
 --- Every entity being looked after (for the diagnostic dump).
 function Applier.Tracked()
     return tracked
@@ -251,7 +280,7 @@ function Applier.RegisterListeners()
     end)
 
     Ext.Entity.OnDestroyDeferred(COMPONENT, function(entity)
-        tracked[entity], pending[entity], stash[entity], waited[entity] = nil, nil, nil, nil
+        tracked[entity], pending[entity], stash[entity], waited[entity], settling[entity] = nil, nil, nil, nil, nil
     end)
 
     -- Right after the engine has decided what to draw: the only point where
@@ -271,6 +300,7 @@ function Applier.RegisterListeners()
                 pcall(function() entity:MarkChanged(COMPONENT) end)
             end
         end
+        if next(settling) then arrangeSettling() end
     end)
 
     Ext.Events.ResetCompleted:Subscribe(function()
